@@ -3,3 +3,4 @@
 *.bak
 tags
 logs.txt
+*.log

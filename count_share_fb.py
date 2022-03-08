@@ -104,7 +104,7 @@ def tam_ngung_va_tim(driver, _xpath):
     return driver.find_element(by='xpath', value=_xpath)
 
 
-def chay_trinh_duyet(headless=True):
+def chay_trinh_duyet(headless=False):
     '''Mở trình duyệt và trả về driver
     '''
     options = Options()
@@ -311,7 +311,7 @@ def main():
     DRIVER = None
 
     try:
-        DRIVER = chay_trinh_duyet(headless=HEADLESS)
+        DRIVER = chay_trinh_duyet()
         DRIVER.maximize_window()
         SIZE = DRIVER.get_window_size()
         DRIVER.set_window_size(SIZE['width'] / 2, SIZE['height'])

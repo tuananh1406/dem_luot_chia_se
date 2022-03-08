@@ -294,7 +294,7 @@ def count_share(driver, url):
 def main():
     LOGGER.info('Chạy chương trình')
 
-    LOGGER.info('Load config')
+    LOGGER.info('Load tele config')
     CONFIG = ConfigParser()
     CONFIG.read('tele.conf')
     BOT_TELE = CONFIG.get('config', 'BOT_TELE')
@@ -311,18 +311,6 @@ def main():
     DRIVER = None
 
     try:
-        TESTING = True
-        if TESTING:
-            LOGGER.info('*' * 50)
-            LOGGER.info('Chạy thử tự động facebook')
-            LOGGER.info('*' * 50)
-            HEADLESS = False
-            COOKIES_PATH = 'Nguyen Huu Tuan Anh.bak'
-        else:
-            COOKIES_PATH = 'tuananh.bak'
-            HEADLESS = True
-        EXTRA['cookies_name'] = COOKIES_PATH
-
         DRIVER = chay_trinh_duyet(headless=HEADLESS)
         DRIVER.maximize_window()
         SIZE = DRIVER.get_window_size()
@@ -332,22 +320,25 @@ def main():
             0,
             windowHandle='current',
         )
+
+        # Lấy cookies
+        COOKIES_PATH = ''
+        if not COOKIES_PATH:
+            # Nếu không có thì đăng  nhập lần đầu để set cookies
+            DRIVER = dang_nhap_facebook(DRIVER, URL)
+            LOGGER.info("Lưu cookies tài khoản")
+            COOKIES_PATH = luu_cookies(DRIVER, 'facebook.bak')
+            LOGGER.info('Tệp cookies được lưu tại: %s', COOKIES_PATH)
+        EXTRA['cookies_name'] = COOKIES_PATH
+
         LOGGER.info('Tiến hành đăng nhập')
         DRIVER = dang_nhap_bang_cookies(DRIVER, COOKIES_PATH, URL)
         LOGGER.info('Mở url bài viết')
         url = 'https://www.facebook.com/permalink.php?story_fbid=116791727707'\
             '8815&id=197278237476062'
         DRIVER = count_share(DRIVER, url=url)
-        # driver = dang_nhap(driver)
-        # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
-        # print("Lưu cookies tài khoản")
-        # duong_dan_tep_cookies = luu_cookies(driver)
-        # if duong_dan_tep_cookies:
-        #     print('Tệp cookies được lưu tại: %s' % (duong_dan_tep_cookies))
         THOI_GIAN_XU_LY = datetime.now() - THOI_GIAN_HIEN_TAI
         LOGGER.info('Thời gian xử lý: %s', THOI_GIAN_XU_LY)
-        # if TESTING:
-        #     input("Ấn Enter để thoát: ")
         return DRIVER
     except Exception as error:
         LOGGER.exception(error)
